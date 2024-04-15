@@ -1,0 +1,19 @@
+<form [formGroup]="reservationForm" (ngSubmit)="onSubmit()">
+    <div>
+        <label for="checkInDate">Check in Date : </label>
+        <input type="date" formControlName="checkInDate">
+    </div>
+    <div>
+        <label for="checkOutDate">Check out Date : </label>
+        <input type="date" formControlName="checkOutDate">
+    </div>
+    <div>
+        <label for="numberOfGuests">Number of Guests : </label>
+        <input type="number" formControlName="numberOfGuests">
+    </div>
+    <div>
+        <label for="roomNumber">Room Numner : </label>
+        <input type="number" formControlName="roomNumber">
+    </div>
+    <button type="submit">Submit</button>
+</form>
