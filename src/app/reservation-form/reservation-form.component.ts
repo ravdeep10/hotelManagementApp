@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, Inject, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ReservationService } from '../reservation/reservation.service';
 import { Reservation } from '../models/reservation';
@@ -13,7 +13,7 @@ export class ReservationFormComponent implements OnInit {
   reservationForm : FormGroup = new FormGroup({});
   
   constructor(private formBuilder : FormBuilder,
-    private reservationService : ReservationService,
+    @Inject(ReservationService) private reservationService : ReservationService,
     private router : Router,
     private activatedRoute : ActivatedRoute
   ) { }
@@ -27,11 +27,12 @@ this.reservationForm = this.formBuilder.group({
   guestEmail : ['' , [Validators.required , Validators.email]],
   roomNumber : ['' , Validators.required],
 })
-  let id = this.activatedRoute.snapshot.paramMap.get('id');
+  let id = parseInt(this.activatedRoute.snapshot.paramMap.get('id') || '');
   if(id){
-    let reservation = this.reservationService.getReservation(parseInt(id));
-    if(reservation)
-    this.reservationForm.patchValue(reservation);
+    this.reservationService.getReservation(id).subscribe(reservation => {
+      if(reservation)
+        this.reservationForm.patchValue(reservation);
+    });
   }
   }
   
@@ -43,10 +44,15 @@ this.reservationForm = this.formBuilder.group({
       let id = this.activatedRoute.snapshot.paramMap.get('id');
       if (id) {
         //update
-        this.reservationService.updateReservation(parseInt(id), reservation);
+        this.reservationService.updateReservation(parseInt(id), reservation).subscribe(() => {
+          console.log('Reservation updated');
+        });
       } else {
         //create
-        this.reservationService.addReservation(reservation);
+        this.reservationService.addReservation(reservation).subscribe(() => {
+          console.log('Reservation added');
+        
+        });
       }
       this.router.navigate(['/list'])
       this.reservationForm.reset();
